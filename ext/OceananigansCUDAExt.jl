@@ -19,6 +19,8 @@ import SparseArrays: SparseMatrixCSC
 import KernelAbstractions: __iterspace, __dynamic_checkbounds, __validindex
 import Oceananigans.DistributedComputations: Distributed
 
+import Base: /
+
 const GPUVar = Union{CuArray, CuContext, CuPtr, Ptr}
 
 function __init__()
@@ -135,5 +137,23 @@ end
 @inline UT.sync_device!(::CuDevice)      = CUDA.synchronize()
 @inline UT.sync_device!(::CUDAGPU)       = CUDA.synchronize()
 @inline UT.sync_device!(::CUDABackend)   = CUDA.synchronize()
+
+# Use faster versions of `newton_div` on Nvidia GPUs
+CUDA.@device_override UT.newton_div(::Type{Float32}, a::Float64, b::Float64) = a * fast_inv_cuda(b)
+CUDA.@device_override UT.newton_div(::Type{Float64}, a::Float64, b::Float64) = a * fast_inv_cuda(b)
+
+function fast_inv_cuda(a::Float64)
+    # Get the approximate reciprocital
+    # https://docs.nvidia.com/cuda/parallel-thread-execution/#floating-point-instructions-rcp-approx-ftz-f64
+    # This instruction chops off last 32bits of mantissa and computes inverse 
+    # while treating all subnormal numbers as 0.0
+    # 32 least significant bits of the result are filled with 0s
+    inv_a = ccall("llvm.nvvm.rcp.approx.ftz.d", llvmcall, Float64, (Float64,), a)
+
+    # Approximate the missing 32bits of mantissa with 2 Newton iterations
+    inv_a = inv_a * muladd(inv_a, -a, 2.0)
+    inv_a = inv_a * muladd(inv_a, -a, 2.0)
+    return inv_a
+end
 
 end # module OceananigansCUDAExt
