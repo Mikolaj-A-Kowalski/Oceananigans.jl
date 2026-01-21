@@ -43,8 +43,8 @@ end
     output_via_f64 = similar(test_input)
 
     ref .= π ./ test_input
-    output_via_f32 .= Oceananigans.Utils.newton_div.(Float32, π, test_input)
-    output_via_f64 .= Oceananigans.Utils.newton_div.(Float64, π, test_input)
+    output_via_f32 .= Oceananigans.Utils.newton_div.(Float32, Float64(π), test_input)
+    output_via_f64 .= Oceananigans.Utils.newton_div.(Float64, Float64(π), test_input)
 
     # Both Float32 and Float64 should call the same function
     @test output_via_f32 == output_via_f64
