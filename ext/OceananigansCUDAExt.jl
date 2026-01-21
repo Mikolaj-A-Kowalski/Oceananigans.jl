@@ -143,7 +143,7 @@ CUDA.@device_override UT.newton_div(::Type{Float64}, a, b::Float64) = a * fast_i
 function fast_inv_cuda(a::Float64)
     # Get the approximate reciprocal
     # https://docs.nvidia.com/cuda/parallel-thread-execution/#floating-point-instructions-rcp-approx-ftz-f64
-    # This instruction chops off last 32bits of mantissa and computes inverse 
+    # This instruction chops off last 32bits of mantissa and computes inverse
     # while treating all subnormal numbers as 0.0
     # If reciprocal would be subnormal, underflows to 0.0
     # 32 least significant bits of the result are filled with 0s
