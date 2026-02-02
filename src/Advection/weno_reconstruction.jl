@@ -100,7 +100,7 @@ WENO{3, Float64, Float32, Oceananigans.Utils.BackendOptimizedNewtonDiv}(order=5)
 ├── buffer_scheme: WENO{2, Float64, Float32, Oceananigans.Utils.BackendOptimizedNewtonDiv}(order=3)
 │   └── buffer_scheme: Centered(order=2)
 └── advecting_velocity_scheme: Centered(order=4)
-````
+```
 """
 function WENO(FT::DataType=Oceananigans.defaults.FloatType,
               FT2::DataType=Float32;
