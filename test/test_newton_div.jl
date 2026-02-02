@@ -24,7 +24,7 @@ end
 
 function append_newton_div_type!(list, weno::WENO{<:Any, <:Any, <:Any, NDC}) where {NDC}
     push!(list, NDC)
-    append_newton_div_type(list, weno.buffer_scheme)
+    append_newton_div_type!(list, weno.buffer_scheme)
 end
 append_newton_div_type!(::Any, ::Any) = nothing
 
