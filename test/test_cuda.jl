@@ -2,8 +2,8 @@ include("dependencies_for_runtests.jl")
 
 using CUDA
 
-@testset "CUDA extension" for newton_div_type in (Oceananigans.Utils.BackendOptimizedNewtonDiv,
-                                                  Oceananigans.Utils.NewtonDivWithConversion{Float32})
+@testset "CUDA extension" for newton_div_type in (Oceananigans.Utils.BackendOptimizedDivision,
+                                                  Oceananigans.Utils.ConvertingDivision{Float32})
     cuda = CUDA.CUDABackend()
     arch = GPU(cuda)
     grid = RectilinearGrid(arch, size=(4, 8, 16), x=[0, 1, 2, 3, 4], y=(0, 1), z=(0, 16))
@@ -44,7 +44,7 @@ end
 @testset "CUDA newton_div" for FT in (Float32, Float64)
     test_input = CuArray(test_data_in_single_binade(FT, 1024))
 
-    WCT = Oceananigans.Utils.BackendOptimizedNewtonDiv
+    WCT = Oceananigans.Utils.BackendOptimizedDivision
 
     ref = similar(test_input)
     output = similar(test_input)
