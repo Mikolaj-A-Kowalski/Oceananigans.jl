@@ -42,5 +42,6 @@ include("multi_region_transformation.jl")
 include("sum_of_arrays.jl")
 include("newton_div.jl")
 include("tabulated_function.jl")
+include("fast_float.jl")
 
 end # module
