@@ -144,7 +144,3 @@ for (op, effective_op) in (
         @inline Base.$op(x::FastFloat, y::FastFloat, z::FastFloat) = FastFloat($op(x.value, y.value, z.value))
     end
 end
-
-# Powers
-@inline Base.:^(x::FastFloat, y::FastFloat) = FastFloat(x.value ^ y.value)
-@inline Base.:^(x::FastFloat, y::Number) = FastFloat(x.value ^ y)
