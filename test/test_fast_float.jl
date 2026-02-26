@@ -19,6 +19,10 @@ import InteractiveUtils: methodswith
     @test promote(FastFloat(1.0), 2) == (FastFloat(1.0), FastFloat(2.0))
     @test promote(FastFloat(1.0f0), 2) == (FastFloat(1.0f0), FastFloat(2.0f0))
 
+    # Promotion with irrationals
+    @test promote(FastFloat(1.0), π) == (FastFloat(1.0), FastFloat(Float64(π)))
+    @test promote(FastFloat(1.0f0), π) == (FastFloat(1.0f0), FastFloat(Float32(π)))
+
 end
 
 

@@ -136,7 +136,7 @@ end
 # List of fully-supported floating point types where applicable.
 # Currently used only in the Advection module to specialize
 # reconstruction schemes (WENO, UpwindBiased, and Centered).
-const fully_supported_float_types = (Float32, Float64, BigFloat)
+#const fully_supported_float_types = (Float32, Float64, BigFloat, )
 
 #####
 ##### Default settings for constructors
@@ -223,6 +223,7 @@ function boundary_conditions end
 include("Architectures.jl")
 include("Units.jl")
 include("Utils/Utils.jl")
+const fully_supported_float_types = (Float32, Float64, BigFloat, Utils.FastFloat{Float32}, Utils.FastFloat{Float64})
 include("Grids/Grids.jl")
 include("Logger.jl")
 include("Operators/Operators.jl")

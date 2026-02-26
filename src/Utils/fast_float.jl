@@ -15,9 +15,13 @@ Arguments
        floating point type used in the scheme. For example, if `f` is a `Float32`, then
        the resulting `FastFloat` will use `Float32` as its underlying type.
 """
-struct FastFloat{T<:Base.IEEEFloat} <: Number
+struct FastFloat{T<:Base.IEEEFloat} <: AbstractFloat
     value::T
 end
+
+# Disambiguity the constructors
+FastFloat{T}(x::Rational) where {T<:Base.IEEEFloat} = FastFloat(T(x))
+FastFloat{T}(x::FastFloat) where {T <: Base.IEEEFloat} = FastFloat(T(x.value))
 
 # Promotions and conversions
 # See unit test test/test_fast_float.jl for expected behaviour
@@ -26,10 +30,21 @@ Base.convert(::Type{FastFloat{T}}, x::Number) where {T} = FastFloat(T(x))
 Base.promote_rule(::Type{FastFloat{T}}, ::Type{S}) where {T, S} = FastFloat{promote_type(T, S)}
 Base.promote_rule(::Type{FastFloat{T}}, ::Type{FastFloat{S}}) where {T, S} = FastFloat{promote_type(T, S)}
 
+# Irrationals need to be handled explicitly
+Base.promote_rule(::Type{<:Base.AbstractIrrational}, ::Type{FastFloat{T}}) where {T} = FastFloat{T}
+
+# BigFloat interoperability
+Base.BigFloat(x::FastFloat) = BigFloat(x.value)
+
 # Unary operators and functions
+# TODO: Rethink the implicit `Base` module when generating the binding! (Why it is not used for RHS!)
 for (op, effective_op) in (
     :+ => :+,
     :- => :-,
+    # Misc
+    :real => :(Base.real),
+    :imag => :(Base.imag),
+    :conj => :(Base.conj),
     # Rounding functions
     # https://docs.julialang.org/en/v1/manual/mathematical-operations/#Rounding-functions
     :round => :(Base.round),
@@ -100,6 +115,22 @@ for (op, effective_op) in (
     end
 end
 
+# Not floating point return type
+for (op, effective_op) in (
+    :isinf => :(Base.isinf),
+   # :isfinite => :(Base.isfinite),
+   # :isnan => :(Base.isnan),
+   # :isnormal => :(Base.isnormal),
+)
+    @eval begin
+        @inline Base.$op(x::FastFloat) = $op(x.value)
+    end
+end
+
+# Type functions
+Base.rtoldefault(::Type{FastFloat{T}}) where {T} = Base.rtoldefault(T)
+Base.eps(::Type{FastFloat{T}}) where {T} = eps(T)
+
 # Binary operators and functions
 for (op, effective_op) in (
     # Basic arithmetic
@@ -113,12 +144,18 @@ for (op, effective_op) in (
     :cld => :(Base.cld),
     :rem => :(Base.rem),
     :mod => :(Base.mod),
-    :mod1 => :(Base.mod1)
+    :mod1 => :(Base.mod1),
+    # Trig functions
+    :atan => :(Base.atan),
     )
     @eval begin
         @inline Base.$op(x::FastFloat, y::FastFloat) = FastFloat($op(x.value, y.value))
     end
 end
+
+# Dirty patches
+Base.atan(x::Real, y::FastFloat) = atan(x, y.value)
+Base.atan(x::FastFloat, y::Real) = atan(x.value, y)
 
 # Not floating point return type
 for (op, effective_op) in (
@@ -128,12 +165,19 @@ for (op, effective_op) in (
     :<= => :<=,
     :> => :>,
     :>= => :>=,
+    :isless => :(Base.isless),
     :signbit => :(Base.signbit),
     )
     @eval begin
         @inline Base.$op(x::FastFloat, y::FastFloat) = $op(x.value, y.value)
     end
 end
+
+# Specialisations to fix for the problem to run
+# Also why no promotion! What is a set with a TotalOrder (all numbers?)
+Base.isless(x::Real, y::FastFloat) = isless(x , y.value)
+Base.isless(x::FastFloat, y::Real) = isless(x.value , y)
+
 
 # Ternary operators and functions
 for (op, effective_op) in (

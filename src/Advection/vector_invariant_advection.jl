@@ -212,6 +212,7 @@ function WENOVectorInvariant(FT::DataType = Oceananigans.defaults.FloatType;
                              kinetic_energy_gradient_order = nothing,
                              multi_dimensional_stencil = false,
                              minimum_buffer_upwind_order = 1,
+                             FT2 = Float32,
                              weno_kw...)
 
     if isnothing(order) # apply global defaults
@@ -226,10 +227,10 @@ function WENOVectorInvariant(FT::DataType = Oceananigans.defaults.FloatType;
         kinetic_energy_gradient_order = nothing_to_default(kinetic_energy_gradient_order, default = order)
     end
 
-    vorticity_scheme               = WENO(FT; order=vorticity_order, minimum_buffer_upwind_order, weno_kw...)
-    vertical_advection_scheme      = WENO(FT; order=vertical_order, minimum_buffer_upwind_order, weno_kw...)
-    kinetic_energy_gradient_scheme = WENO(FT; order=kinetic_energy_gradient_order, minimum_buffer_upwind_order, weno_kw...)
-    divergence_scheme              = WENO(FT; order=divergence_order, minimum_buffer_upwind_order, weno_kw...)
+    vorticity_scheme               = WENO(FT, FT2; order=vorticity_order, minimum_buffer_upwind_order, weno_kw...)
+    vertical_advection_scheme      = WENO(FT, FT2; order=vertical_order, minimum_buffer_upwind_order, weno_kw...)
+    kinetic_energy_gradient_scheme = WENO(FT, FT2; order=kinetic_energy_gradient_order, minimum_buffer_upwind_order, weno_kw...)
+    divergence_scheme              = WENO(FT, FT2; order=divergence_order, minimum_buffer_upwind_order, weno_kw...)
 
     default_upwinding = OnlySelfUpwinding(cross_scheme = divergence_scheme)
     upwinding = nothing_to_default(upwinding; default = default_upwinding)
