@@ -2,7 +2,7 @@ using Oceananigans
 using SeawaterPolynomials: TEOS10EquationOfState
 using NVTX
 using CUDA
-using ClimaOcean
+#using ClimaOcean
 
 function many_steps!(model, Nt; Δt=1e-3)
     for _ in 1:Nt
@@ -20,12 +20,12 @@ function hi_res_hydrostatic_model(grid;
     closure = CATKEVerticalDiffusivity(),
     timestepper = :QuasiAdamsBashforth2)
     
-    tracers = tuple(:T, :S, :e, passive_tracers...)
+    tracers = tuple(:T, :S, passive_tracers...)
     buoyancy = SeawaterBuoyancy(equation_of_state=TEOS10EquationOfState())
     free_surface = SplitExplicitFreeSurface(substeps=30)
     coriolis = HydrostaticSphericalCoriolis()
 
-    model = HydrostaticFreeSurfaceModel(; grid, momentum_advection, tracer_advection, coriolis,
+    model = HydrostaticFreeSurfaceModel(grid; momentum_advection, tracer_advection, coriolis,
                                         buoyancy, closure, free_surface, tracers,
                                         vertical_coordinate, timestepper)
 
@@ -59,7 +59,8 @@ function tripolar_grid(arch, Nx, Ny, Nz; bathy=false, halo=(7, 7, 7), kw...)
     bathymetry = Nothing
 
     if bathy
-        bathymetry = ClimaOcean.regrid_bathymetry(underlying_grid)
+        @error "No ClimaOcean = No bathymetry" 
+#        bathymetry = ClimaOcean.regrid_bathymetry(underlying_grid)
     else
         H = - z[2]
         dφ, dλ = 4, 8
@@ -84,7 +85,7 @@ immersed = true # note :tripolar is always immersed
 Nx = 512
 Ny = 256
 Nz = 128
-arch = GPU()
+arch = CPU()
 Oceananigans.defaults.FloatType = Float64
 Nt = 100
 z = (-3000, 0)
@@ -99,7 +100,7 @@ model_kw = (;
 )
 
 if config == :tripolar
-    grid = tripolar_grid(arch, Nx, Ny, Nz; bathy=true, tripolar_kw...)
+    grid = tripolar_grid(arch, Nx, Ny, Nz; bathy=false, tripolar_kw...)
     model = hi_res_hydrostatic_model(grid; model_kw...)
 
 elseif config == :channel
