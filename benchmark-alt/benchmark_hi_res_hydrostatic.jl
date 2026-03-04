@@ -1,7 +1,7 @@
 using Oceananigans
 using SeawaterPolynomials: TEOS10EquationOfState
 using NVTX
-using CUDA
+using AMDGPU
 #using ClimaOcean
 
 function many_steps!(model, Nt; Δt=1e-3)
@@ -85,7 +85,7 @@ immersed = true # note :tripolar is always immersed
 Nx = 512
 Ny = 256
 Nz = 128
-arch = CPU()
+arch = GPU(AMDGPU.ROCBackend())
 Oceananigans.defaults.FloatType = Float64
 Nt = 100
 z = (-3000, 0)
