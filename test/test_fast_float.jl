@@ -1,6 +1,6 @@
 include("dependencies_for_runtests.jl")
 
-using Oceananigans.Utils: FastFloat
+using Oceananigans.FastFloats: FastFloat
 import InteractiveUtils: methodswith
 
 @testset "Conversion and Promotion" begin

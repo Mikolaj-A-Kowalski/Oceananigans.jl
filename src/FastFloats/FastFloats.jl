@@ -1,3 +1,6 @@
+module FastFloats
+
+export FastFloat
 
 """
     FastFloat(f::T) where {T<:Base.IEEEFloat}
@@ -178,7 +181,6 @@ end
 Base.isless(x::Real, y::FastFloat) = isless(x , y.value)
 Base.isless(x::FastFloat, y::Real) = isless(x.value , y)
 
-
 # Ternary operators and functions
 for (op, effective_op) in (
     :fma => :(Base.fma),
@@ -188,3 +190,5 @@ for (op, effective_op) in (
         @inline Base.$op(x::FastFloat, y::FastFloat, z::FastFloat) = FastFloat($op(x.value, y.value, z.value))
     end
 end
+
+end # module

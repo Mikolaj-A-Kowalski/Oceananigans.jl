@@ -133,10 +133,14 @@ function __init__()
     Threads.nthreads() > 1 && @info "Oceananigans will use $(Threads.nthreads()) threads"
 end
 
+# Load stand-alone FastFloat module
+# It needs to be done before the supported floating types are specified
+include("FastFloats/FastFloats.jl")
+
 # List of fully-supported floating point types where applicable.
 # Currently used only in the Advection module to specialize
 # reconstruction schemes (WENO, UpwindBiased, and Centered).
-#const fully_supported_float_types = (Float32, Float64, BigFloat, )
+const fully_supported_float_types = (Float32, Float64, BigFloat, FastFloats.FastFloat{Float32}, FastFloats.FastFloat{Float64})
 
 #####
 ##### Default settings for constructors
@@ -223,7 +227,6 @@ function boundary_conditions end
 include("Architectures.jl")
 include("Units.jl")
 include("Utils/Utils.jl")
-const fully_supported_float_types = (Float32, Float64, BigFloat, Utils.FastFloat{Float32}, Utils.FastFloat{Float64})
 include("Grids/Grids.jl")
 include("Logger.jl")
 include("Operators/Operators.jl")
@@ -275,6 +278,7 @@ include("MultiRegion/MultiRegion.jl")
 using .Logger
 using .Architectures
 using .Utils
+using .FastFloats
 using .Advection
 using .Grids
 using .OrthogonalSphericalShellGrids
