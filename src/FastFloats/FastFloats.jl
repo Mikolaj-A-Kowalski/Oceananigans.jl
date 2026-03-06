@@ -40,139 +40,134 @@ Base.promote_rule(::Type{<:Base.AbstractIrrational}, ::Type{FastFloat{T}}) where
 Base.BigFloat(x::FastFloat) = BigFloat(x.value)
 
 # Unary operators and functions
-# TODO: Rethink the implicit `Base` module when generating the binding! (Why it is not used for RHS!)
 for (op, effective_op) in (
-    :+ => :+,
-    :- => :-,
+    :(Base.:+)           => :(Base.:+),
+    :(Base.:-)           => :(Base.:-),
     # Misc
-    :real => :(Base.real),
-    :imag => :(Base.imag),
-    :conj => :(Base.conj),
+    :(Base.real)         => :(Base.real),
+    :(Base.imag)         => :(Base.imag),
+    :(Base.conj)         => :(Base.conj),
     # Rounding functions
     # https://docs.julialang.org/en/v1/manual/mathematical-operations/#Rounding-functions
-    :round => :(Base.round),
-    :floor => :(Base.floor),
-    :ceil => :(Base.ceil),
-    :trunc => :(Base.trunc),
+    :(Base.round)        => :(Base.round),
+    :(Base.floor)        => :(Base.floor),
+    :(Base.ceil)         => :(Base.ceil),
+    :(Base.trunc)        => :(Base.trunc),
     # Sign and absolute value functions
     # https://docs.julialang.org/en/v1/manual/mathematical-operations/#Sign-and-absolute-value-functions
-    :abs => :(Base.abs),
-    :abs2 => :(Base.abs2),
-    :sign => :(Base.sign),
-    :flipsign => :(Base.flipsign),
+    :(Base.abs)          => :(Base.abs),
+    :(Base.abs2)         => :(Base.abs2),
+    :(Base.sign)         => :(Base.sign),
+    :(Base.flipsign)     => :(Base.flipsign),
     # Powers, logs and roots
     # https://docs.julialang.org/en/v1/manual/mathematical-operations/#Powers,-logs-and-roots
-    :sqrt => :(Base.sqrt),
-    :cbrt => :(Base.cbrt),
-    :fourthroot => :(Base.fourthroot),
-    :exp => :(Base.exp),
-    :expm1 => :(Base.expm1),
-    :log => :(Base.log),
-    :log2 => :(Base.log2),
-    :log10 => :(Base.log10),
-    :log1p => :(Base.log1p),
-    :significand => :significand,
+    :(Base.sqrt)         => :(Base.sqrt),
+    :(Base.cbrt)         => :(Base.cbrt),
+    :(Base.fourthroot)   => :(Base.fourthroot),
+    :(Base.exp)          => :(Base.exp),
+    :(Base.expm1)        => :(Base.expm1),
+    :(Base.log)          => :(Base.log),
+    :(Base.log2)         => :(Base.log2),
+    :(Base.log10)        => :(Base.log10),
+    :(Base.log1p)        => :(Base.log1p),
+    :(Base.significand)  => :(Base.significand),
     # Trigonometric and hyperbolic functions
     # https://docs.julialang.org/en/v1/manual/mathematical-operations/#Trigonometric-and-hyperbolic-functions
-    :sin => :(Base.sin),
-    :cos => :(Base.cos),
-    :tan => :(Base.tan),
-    :cot => :(Base.cot),
-    :sec => :(Base.sec),
-    :csc => :(Base.csc),
-    :sinh => :(Base.sinh),
-    :cosh => :(Base.cosh),
-    :tanh => :(Base.tanh),
-    :coth => :(Base.coth),
-    :sech => :(Base.sech),
-    :csch => :(Base.csch),
-    :asin => :(Base.asin),
-    :acos => :(Base.acos),
-    :atan => :(Base.atan),
-    :acot => :(Base.acot),
-    :asec => :(Base.asec),
-    :acsc => :(Base.acsc),
-    :asinh => :(Base.asinh),
-    :acosh => :(Base.acosh),
-    :atanh => :(Base.atanh),
-    :acoth => :(Base.acoth),
-    :asech => :(Base.asech),
-    :acsch => :(Base.acsch),
-    :sinc => :(Base.sinc),
-    :cosc => :(Base.cosc),
-    :sind => :(Base.sind),
-    :cosd => :(Base.cosd),
-    :tand => :(Base.tand),
-    :cotd => :(Base.cotd),
-    :secd => :(Base.secd),
-    :cscd => :(Base.cscd),
-    :asind => :(Base.asind),
-    :acosd => :(Base.acosd),
-    :atand => :(Base.atand),
-    :acotd => :(Base.acotd),
-    :asecd => :(Base.asecd),
-    :acscd => :(Base.acscd),
+    :(Base.sin)          => :(Base.sin),
+    :(Base.cos)          => :(Base.cos),
+    :(Base.tan)          => :(Base.tan),
+    :(Base.cot)          => :(Base.cot),
+    :(Base.sec)          => :(Base.sec),
+    :(Base.csc)          => :(Base.csc),
+    :(Base.sinh)         => :(Base.sinh),
+    :(Base.cosh)         => :(Base.cosh),
+    :(Base.tanh)         => :(Base.tanh),
+    :(Base.coth)         => :(Base.coth),
+    :(Base.sech)         => :(Base.sech),
+    :(Base.csch)         => :(Base.csch),
+    :(Base.asin)         => :(Base.asin),
+    :(Base.acos)         => :(Base.acos),
+    :(Base.atan)         => :(Base.atan),
+    :(Base.acot)         => :(Base.acot),
+    :(Base.asec)         => :(Base.asec),
+    :(Base.acsc)         => :(Base.acsc),
+    :(Base.asinh)        => :(Base.asinh),
+    :(Base.acosh)        => :(Base.acosh),
+    :(Base.atanh)        => :(Base.atanh),
+    :(Base.acoth)        => :(Base.acoth),
+    :(Base.asech)        => :(Base.asech),
+    :(Base.acsch)        => :(Base.acsch),
+    :(Base.sinc)         => :(Base.sinc),
+    :(Base.cosc)         => :(Base.cosc),
+    :(Base.sind)         => :(Base.sind),
+    :(Base.cosd)         => :(Base.cosd),
+    :(Base.tand)         => :(Base.tand),
+    :(Base.cotd)         => :(Base.cotd),
+    :(Base.secd)         => :(Base.secd),
+    :(Base.cscd)         => :(Base.cscd),
+    :(Base.asind)        => :(Base.asind),
+    :(Base.acosd)        => :(Base.acosd),
+    :(Base.atand)        => :(Base.atand),
+    :(Base.acotd)        => :(Base.acotd),
+    :(Base.asecd)        => :(Base.asecd),
+    :(Base.acscd)        => :(Base.acscd),
     )
     @eval begin
-        @inline Base.$op(x::FastFloat) = FastFloat($op(x.value))
+        @inline $op(x::FastFloat) = FastFloat($effective_op(x.value))
     end
 end
 
 # Not floating point return type
 for (op, effective_op) in (
-    :isinf => :(Base.isinf),
-   # :isfinite => :(Base.isfinite),
-   # :isnan => :(Base.isnan),
-   # :isnormal => :(Base.isnormal),
+    :(Base.isinf)  => :(Base.isinf),
+    :(Base.isfinite) => :(Base.isfinite),
+    :(Base.isnan)    => :(Base.isnan),
+    :(Base.issubnormal) => :(Base.issubnormal),
 )
     @eval begin
-        @inline Base.$op(x::FastFloat) = $op(x.value)
+        @inline $op(x::FastFloat) = $effective_op(x.value)
     end
 end
-
-# Type functions
-Base.rtoldefault(::Type{FastFloat{T}}) where {T} = Base.rtoldefault(T)
-Base.eps(::Type{FastFloat{T}}) where {T} = eps(T)
 
 # Binary operators and functions
 for (op, effective_op) in (
     # Basic arithmetic
-    :+ => :+,
-    :- => :-,
-    :* => :*,
-    :/ => :/,
+    :(Base.:+)    => :(Base.:+),
+    :(Base.:-)    => :(Base.:-),
+    :(Base.:*)    => :(Base.:*),
+    :(Base.:/)    => :(Base.:/),
     # Division functions
-    :div => :(Base.div),
-    :fld => :(Base.fld),
-    :cld => :(Base.cld),
-    :rem => :(Base.rem),
-    :mod => :(Base.mod),
-    :mod1 => :(Base.mod1),
+    :(Base.div)   => :(Base.div),
+    :(Base.fld)   => :(Base.fld),
+    :(Base.cld)   => :(Base.cld),
+    :(Base.rem)   => :(Base.rem),
+    :(Base.mod)   => :(Base.mod),
+    :(Base.mod1)  => :(Base.mod1),
     # Trig functions
-    :atan => :(Base.atan),
+    :(Base.atan)  => :(Base.atan),
     )
     @eval begin
-        @inline Base.$op(x::FastFloat, y::FastFloat) = FastFloat($op(x.value, y.value))
+        @inline $op(x::FastFloat, y::FastFloat) = FastFloat($effective_op(x.value, y.value))
     end
 end
 
-# Dirty patches
-Base.atan(x::Real, y::FastFloat) = atan(x, y.value)
-Base.atan(x::FastFloat, y::Real) = atan(x.value, y)
+# Patch for atan2
+Base.atan(x::Real, y::FastFloat) = Base.atan(x, y.value)
+Base.atan(x::FastFloat, y::Real) = Base.atan(x.value, y)
 
 # Not floating point return type
 for (op, effective_op) in (
-    :(==) => :(==),
-    :!= => :!=,
-    :< => :<,
-    :<= => :<=,
-    :> => :>,
-    :>= => :>=,
-    :isless => :(Base.isless),
-    :signbit => :(Base.signbit),
+    :(Base.:(==))  => :(Base.:(==)),
+    :(Base.:(!=))  => :(Base.:(!=)),
+    :(Base.:(<))   => :(Base.:(<)),
+    :(Base.:(<=))  => :(Base.:(<=)),
+    :(Base.:(>))   => :(Base.:(>)),
+    :(Base.:(>=))  => :(Base.:(>=)),
+    :(Base.isless) => :(Base.isless),
+    :(Base.signbit) => :(Base.signbit),
     )
     @eval begin
-        @inline Base.$op(x::FastFloat, y::FastFloat) = $op(x.value, y.value)
+        @inline $op(x::FastFloat, y::FastFloat) = $effective_op(x.value, y.value)
     end
 end
 
@@ -183,12 +178,17 @@ Base.isless(x::FastFloat, y::Real) = isless(x.value , y)
 
 # Ternary operators and functions
 for (op, effective_op) in (
-    :fma => :(Base.fma),
-    :muladd => :(Base.muladd),
+    :(Base.fma)    => :(Base.fma),
+    :(Base.muladd) => :(Base.muladd),
     )
     @eval begin
-        @inline Base.$op(x::FastFloat, y::FastFloat, z::FastFloat) = FastFloat($op(x.value, y.value, z.value))
+        @inline $op(x::FastFloat, y::FastFloat, z::FastFloat) = FastFloat($effective_op(x.value, y.value, z.value))
     end
 end
+
+# Type functions
+Base.rtoldefault(::Type{FastFloat{T}}) where {T} = Base.rtoldefault(T)
+Base.eps(::Type{FastFloat{T}}) where {T} = Base.eps(T)
+
 
 end # module
