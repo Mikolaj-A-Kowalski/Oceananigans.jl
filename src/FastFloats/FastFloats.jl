@@ -155,6 +155,10 @@ end
 Base.atan(x::Real, y::FastFloat) = Base.atan(x, y.value)
 Base.atan(x::FastFloat, y::Real) = Base.atan(x.value, y)
 
+# Powers
+Base.:^(x::FastFloat, y::FastFloat) = FastFloat(Base.:^(x.value, y.value))
+Base.:^(x::FastFloat, y::Integer) = FastFloat(Base.:^(x.value, y))
+
 # Not floating point return type
 for (op, effective_op) in (
     :(Base.:(==))  => :(Base.:(==)),
