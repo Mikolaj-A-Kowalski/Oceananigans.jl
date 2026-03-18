@@ -94,3 +94,27 @@ function adapt_advection_order(advection::WENO{B}, N::Int, grid::AbstractGrid) w
         return WENO(order=2N-1)
     end
 end
+
+#####
+##### materialize_advection
+#####
+
+"""
+    materialize_advection(advection, grid)
+
+Return a fully materialized advection scheme appropriate for `grid`.
+This is called inside model constructors (with access to the grid architecture)
+to resolve any backend-specific defaults — for example, swapping
+`BackendOptimizedDivision` WENO weights for an alternative when the grid's
+architecture does not support the default low-level intrinsics.
+
+The default implementation is a no-op passthrough.  Architecture-specific
+extensions (e.g. the Reactant extension) add specialized methods that dispatch
+on the grid type and replace incompatible weight-computation strategies.
+"""
+materialize_advection(advection, grid) = advection
+materialize_advection(::Nothing, grid) = nothing
+materialize_advection(advection::FluxFormAdvection, grid) =
+    FluxFormAdvection(materialize_advection(advection.x, grid),
+                      materialize_advection(advection.y, grid),
+                      materialize_advection(advection.z, grid))

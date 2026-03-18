@@ -163,3 +163,11 @@ on_architecture(to, scheme::WENO{N, FT, WCT}) where {N, FT, WCT} =
     WENO{N, FT, WCT}(on_architecture(to, scheme.bounds),
                      on_architecture(to, scheme.buffer_scheme),
                      on_architecture(to, scheme.advecting_velocity_scheme))
+
+# Recursively replace the weight computation type in a WENO scheme chain.
+# Used by architecture-specific materialization (e.g. to avoid backend intrinsics under Reactant).
+replace_weight_computation(scheme, ::Type) = scheme
+function replace_weight_computation(weno::WENO{N, FT, WCT}, ::Type{NewWCT}) where {N, FT, WCT, NewWCT}
+    new_buffer = replace_weight_computation(weno.buffer_scheme, NewWCT)
+    return WENO{N, FT, NewWCT}(weno.bounds, new_buffer, weno.advecting_velocity_scheme)
+end
